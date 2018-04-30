@@ -1,7 +1,7 @@
 import csv
+from GraphPlot import GraphPlot
+from Calculation import Calculation
 import numpy as np
-import matplotlib.pyplot as plt
-
 
 def main():
     # define variables
@@ -17,26 +17,27 @@ def main():
     # read variables from file
     readFromFile(current, count, correctCount, magneticFieldStrength,
     momentum, totalEnergy, totalEnergyInKeV, kineticEnergy, kurieVariable)
-    # Section 1
-    sectionOne(totalEnergy, kurieVariable)
+    # start each sections
+    sectionOne(kurieVariable, momentum, totalEnergy)
 
-def sectionOne(totalEnergy, kurieVariable):
-    plt.plot(totalEnergy, kurieVariable)
-    plt.xlabel('Total Energy (J)')
-    plt.ylabel('Kurie Variable')
-    plt.show()
+# The running results of section 1
+def sectionOne(kurieVariable, momentum, totalEnergy):
+    # initialise classes
+    g = GraphPlot()
+    cal = Calculation()
+    # calculating variables
+    kuriePeak = cal.positionOfPeak(kurieVariable)
+    kuriePeakToEnd = kurieVariable[kuriePeak:]
+    totalEnergyPeakToEnd = totalEnergy[kuriePeak:]
+    betaKineticEnergy = cal.getGroupKineticEnergy(momentum)
+    betaKineticEnergyPeakToEnd = betaKineticEnergy[kuriePeak:]
+    # graph plots
+    g.plotXY(totalEnergy, kurieVariable, "Total Energy", "Kurie Variable")
+    g.plotXY(betaKineticEnergy, kurieVariable, "Kinetic Energy of Beta Particle (electron)", "Kurie Variable")
+    print(str(betaKineticEnergy))
+    g.plotBestFit(betaKineticEnergyPeakToEnd, kuriePeakToEnd)
 
-def plotBestFit(x, y):
-    # Scatter plot
-    plt.scatter(x, y)
-    # Add correlation line
-    axes = plt.gca()
-    m, b = np.polyfit(x, y, 1)
-    X_plot = np.linspace(axes.get_xlim()[0],axes.get_xlim()[1],100)
-    plt.plot(X_plot, m*X_plot + b, '-')
-    plt.show()
-
-
+# Read data from data set
 def readFromFile(current, count, correctCount, magneticFieldStrength,
 momentum, totalEnergy, totalEnergyInKeV, kineticEnergy, kurieVariable):
     with open('data_b.csv') as csvfile:

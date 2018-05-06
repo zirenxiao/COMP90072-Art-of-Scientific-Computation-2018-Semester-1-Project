@@ -1,7 +1,14 @@
 import csv
 from GraphPlot import GraphPlot
-from Calculation import Calculation
-import numpy as np
+from Controll import Controll
+from RestFrameMeson import RestFrameMeson
+from MesonProbability import MesonProbability
+from KineticEnergy import KineticEnergy
+g = GraphPlot()
+controll = Controll()
+restMeson = RestFrameMeson()
+prob = MesonProbability()
+kinetice = KineticEnergy()
 
 def main():
     # define variables
@@ -18,24 +25,47 @@ def main():
     readFromFile(current, count, correctCount, magneticFieldStrength,
     momentum, totalEnergy, totalEnergyInKeV, kineticEnergy, kurieVariable)
     # start each sections
-    sectionOne(kurieVariable, momentum, totalEnergy)
+    # sectionOne(kurieVariable, momentum, totalEnergy)
+    sectionTwo(10000, 200, 10)
 
 # The running results of section 1
 def sectionOne(kurieVariable, momentum, totalEnergy):
     # initialise classes
-    g = GraphPlot()
-    cal = Calculation()
+
     # calculating variables
-    kuriePeak = cal.positionOfPeak(kurieVariable)
+    kuriePeak = kinetice.positionOfPeak(kurieVariable)
     kuriePeakToEnd = kurieVariable[kuriePeak:]
     totalEnergyPeakToEnd = totalEnergy[kuriePeak:]
-    betaKineticEnergy = cal.getGroupKineticEnergy(momentum)
+    betaKineticEnergy = kinetice.getGroupKineticEnergy(momentum)
     betaKineticEnergyPeakToEnd = betaKineticEnergy[kuriePeak:]
     # graph plots
     g.plotXY(totalEnergy, kurieVariable, "Total Energy", "Kurie Variable")
     g.plotXY(betaKineticEnergy, kurieVariable, "Kinetic Energy of Beta Particle (electron)", "Kurie Variable")
     print(str(betaKineticEnergy))
     g.plotBestFit(betaKineticEnergyPeakToEnd, kuriePeakToEnd)
+
+def sectionTwo(size, mean, sd):
+    pions, kaons = restMeson.generateMesons(size, mean, sd)
+    # print("Number of Pions: " + str(len(pions)))
+    # g.plotHist(pions)
+    # print("Number of Kaons: " + str(len(kaons)))
+    # g.plotHist(kaons)
+    pionsDistance = controll.pionsDistanceTravelled(pions)
+    kaonsDistance = controll.kaonsDistanceTravelled(kaons)
+    # g.plotHist(cal.getDistance(pionsDistance))
+    # g.plotHist(cal.getDistance(kaonsDistance))
+
+    pionLabResult = controll.pionsLabMomentum(pionsDistance)
+    # g.plotHist(cal.getLongitudinals(pionLabResult))
+    # g.plotHist(cal.getTransverse(pionLabResult))
+    kaonsLabResult = controll.kaonsLabMomentum(kaonsDistance)
+    # g.plotHist(cal.getLongitudinals(kaonsLabResult))
+    # g.plotHist(cal.getTransverse(kaonsLabResult))
+
+    pionHitDetector = prob.calculatePercentHitDetector(pionLabResult)
+    # kaonsHitDetector = cal.calculatePercentHitDetector(kaonsLabResult)
+    print(pionHitDetector/len(pions))
+    # print(kaonsHitDetector/len(kaons))
 
 # Read data from data set
 def readFromFile(current, count, correctCount, magneticFieldStrength,

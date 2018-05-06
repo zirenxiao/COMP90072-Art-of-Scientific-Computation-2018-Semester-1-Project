@@ -1,7 +1,9 @@
 import numpy
+
+MASSOFELECTRON = 9.11e-31 # unit kg
 SPEEDOFOBSERVER = 1
-MASSOFELECTRON = 9.11e-31
-class Calculation:
+
+class KineticEnergy:
     def calculateKineticEnergy(self, p, m):
         c = SPEEDOFOBSERVER
         return (numpy.sqrt(pow(p*c, 2)+pow(c, 4)*m*m) - m*c*c)

@@ -1,11 +1,11 @@
 # MatPlotlib
 from statistics import mean
 import matplotlib.pyplot as plt
+import matplotlib.mlab as mlab
 from matplotlib import pylab
 # Scientific libraries
 import numpy as np
 from scipy import stats
-
 
 class GraphPlot:
     def plotXY(self, x, y, xComment="X", yComment="Y"):
@@ -29,3 +29,6 @@ class GraphPlot:
         m = ((mean(xs) * mean(ys)) - mean(xs*ys)) / ((mean(xs) * mean(xs) - mean(xs*xs)))
         b = mean(ys) - m*mean(xs)
         return m, b
+    def plotHist(self, xs):
+        plt.hist(xs)
+        plt.show()
